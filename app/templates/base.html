@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}OWASP Top 10 Demo{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>OWASP Top 10 Demo</h1>
+            <p>A realistic demonstration of common web application vulnerabilities</p>
+            {% if authenticated %}
+                <a href="/logout">Logout</a>
+            {% else %}
+                <form action="/login" method="post">
+                    <input type="text" name="username" placeholder="Username" required>
+                    <input type="password" name="password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                </form>
+                <form action="/create_user" method="post">
+                    <input type="text" name="username" placeholder="Username" required>
+                    <input type="password" name="password" placeholder="Password" required>
+                    <button type="submit">Create Account</button>
+                </form>
+                
+            {% endif %}
+        </div>
+    </header>
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/AS01">Injection</a></li>
+                <li><a href="/AS02">Broken Authentication</a></li>
+                <li><a href="/AS03">Sensitive Data Exposure</a></li>
+                <li><a href="/AS04">XML External Entities (XXE)</a></li>
+                <li><a href="/AS05">Broken Access Control</a></li>
+                <li><a href="/AS06">Security Misconfiguration</a></li>
+                <li><a href="/AS07">Cross-Site Scripting (XSS)</a></li>
+                <li><a href="/AS08">Insecure Deserialization</a></li>
+                <li><a href="/AS09">Using Components with Known Vulnerabilities</a></li>
+                <li><a href="/AS10">Insufficient Logging & Monitoring</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    <footer>
+        <div class="container">
+            &copy; 2024 OWASP Top 10 Demo
+        </div>
+    </footer>
+</body>
+</html>

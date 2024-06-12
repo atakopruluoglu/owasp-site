@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}AS04: XML External Entities (XXE){% endblock %}
+{% block content %}
+<h1>AS04: XML External Entities (XXE)</h1>
+<p>Simulate an XXE vulnerability by sending XML data:</p>
+<form method="post" action="/AS04">
+    <textarea name="xml_input" rows="10" cols="30"></textarea>
+    <br>
+    <input type="submit">
+</form>
+<a href="/">Back to Home</a>
+{% endblock %}

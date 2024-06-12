@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}AS07: Cross-Site Scripting (XSS){% endblock %}
+{% block content %}
+<h1>AS07: Cross-Site Scripting (XSS)</h1>
+<p>Enter some text to see XSS vulnerability:</p>
+<form method="post">
+    Enter something: <input type="text" name="user_input">
+    <input type="submit">
+</form>
+<a href="/">Back to Home</a>
+{% endblock %}

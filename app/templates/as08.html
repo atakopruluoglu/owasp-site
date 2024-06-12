@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}AS08: Insecure Deserialization{% endblock %}
+{% block content %}
+<h1>AS08: Insecure Deserialization</h1>
+<p>Simulate insecure deserialization by sending serialized data:</p>
+<form method="post" action="/AS08">
+    <textarea name="serialized_data" rows="10" cols="30"></textarea>
+    <br>
+    <input type="submit">
+</form>
+<a href="/">Back to Home</a>
+{% endblock %}
