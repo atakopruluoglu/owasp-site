@@ -2,11 +2,60 @@
 {% block title %}AS08: Insecure Deserialization{% endblock %}
 {% block content %}
 <h1>AS08: Insecure Deserialization</h1>
-<p>Simulate insecure deserialization by sending serialized data:</p>
-<form method="post" action="/AS08">
-    <textarea name="serialized_data" rows="10" cols="30"></textarea>
-    <br>
-    <input type="submit">
-</form>
+<p>Simulate insecure deserialization by sending serialized data</p>
+<!DOCTYPE html>
+<html>
+<body>
+      <div class="main">
+            {% if processed_text %}
+            <h3 style="color: rgb(255,0,0)" id="text">{{ processed_text }}</h3>
+            {% endif %}
+            {% if processed_text_succ %}
+            <h3 style="color: rgb(0,255,0)" id="text">{{ processed_text_succ }}</h3>
+            {% endif %}
+            <h3>Enter your login credentials</h3>
+            <form method="post" action="/AS08?action=login">
+                  <label for="username">
+                        Username
+                  </label>
+                  <input type="text" 
+                         id="username" 
+                         name="username" 
+                         placeholder="Enter your Username" required>
+                <br>
+                <br>
+                  <label for="password">
+                        Password   
+                  </label>
+                  <input type="password"
+                         id="password" 
+                         name="password"
+                         placeholder="Enter your Password" required>
+                <br>
+                <br>
+                {{ captcha() }}
+                <br>
+                <input type="text" id="captcha_text" name="captcha"> 
+                <br>
+                <br>
+                <div class="wrap">
+                    <button type="submit"
+                            onclick="solve()">
+                            Submit
+                    </button>
+                </div>
+            </form>
+
+            <p>Not registered?
+                  <a href="/AS08?action=create"
+                     style="text-decoration: none;">
+                        Create an account
+                  </a>
+            </p>
+      </div>
+</body>
+
+</html>
+
 <a href="/">Back to Home</a>
 {% endblock %}

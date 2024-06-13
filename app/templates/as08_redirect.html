@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}AS08: Insecure Deserialization{% endblock %}
+{% block content %}
+<h1>AS08: Insecure Deserialization</h1>
+<p>Simulate insecure deserialization by sending serialized data</p>
+<!DOCTYPE html>
+<html>
+<body>
+    {% if processed_text_succ %}
+    <h3 style="color: rgb(0,255,0)" id="text">{{ processed_text_succ }}</h3>
+    {% endif %}
+    <h3>Welcome to lab insecure deserialization!</h3>
+</body>
+
+</html>
+
+<a href="/">Back to Home</a>
+{% endblock %}

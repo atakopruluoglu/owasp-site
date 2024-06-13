@@ -1,0 +1,4 @@
+flask==1.1.2
+flask_sessionstore==0.4.5
+flask_session_captcha==1.4.2
+werkzeug==0.16.0

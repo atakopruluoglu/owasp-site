@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}AS08: Insecure Deserialization{% endblock %}
+{% block content %}
+<h1>AS08: Insecure Deserialization</h1>
+<p>Simulate insecure deserialization by sending serialized data</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Account</title>
+</head>
+<body>
+    <h1>Create an Account</h1>
+    <form action="/AS08?action=save_user" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <input type="submit" value="Create Account">
+    </form>
+</body>
+</html>
+<a href="/">Back to Home</a>
+{% endblock %}
