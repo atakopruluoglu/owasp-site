@@ -1,10 +1,17 @@
-from flask import render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for
 from hashlib import sha256
+from werkzeug.utils import secure_filename
 import os
 from .user_auth import authenticate, write_user
 
-
 from app import app
+
+
+UPLOAD_FOLDER = 'uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 @app.route('/create_user', methods=['POST'])
 def create_user():
@@ -15,7 +22,9 @@ def create_user():
         return "User created successfully"
     else:
         return "User already exists"
-    
+
+
+
 def read_users():
     users_file = os.path.join(os.path.dirname(__file__), 'user_data', 'users.txt')
     users = {}
@@ -77,9 +86,24 @@ def AS04():
     return render_template('AS04.html')
 
 # AS05: Broken Access Control
-@app.route('/AS05')
+@app.route('/AS05', methods=['GET', 'POST'])
 def AS05():
-    return render_template('AS05.html')
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            return redirect(request.url)
+        if file:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('AS05'))
+    return render_template('as05.html')
+
+
+
+
+
 
 # AS06: Security Misconfiguration
 @app.route('/AS06')
@@ -122,3 +146,20 @@ def login():
 def logout():
     # Perform logout operations if needed
     return redirect(url_for('index'))  # Redirect to the homepage after logout
+
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        # Check if the file part is in the request
+        if 'file' not in request.files:
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            return redirect(request.url)
+        if file:
+            # Securely save the file
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('AS05'))
+    return render_template('upload.html')

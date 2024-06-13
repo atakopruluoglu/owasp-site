@@ -1,7 +1,12 @@
 {% extends "base.html" %}
-{% block title %}AS05: Broken Access Control{% endblock %}
+{% block title %}AS05: SECURITY MISCONFIGURATION{% endblock %}
 {% block content %}
-<h1>AS05: Broken Access Control</h1>
+<h1>AS05: SECURITY MISCONFIGURATION</h1>
 <p>This page simulates broken access control by providing access without proper authorization checks.</p>
+<form method="post" enctype="multipart/form-data">
+    <label for="file">Upload a profile image:</label>
+    <input type="file" id="file" name="file">
+    <input type="submit" value="Upload">
+</form>
 <a href="/">Back to Home</a>
 {% endblock %}
