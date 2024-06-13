@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}AS11: Insecure Direct Object References (IDOR){% endblock %}
+{% block content %}
+<h1>AS11: Insecure Direct Object References (IDOR)</h1>
+<p>This page demonstrates the risks of Insecure Direct Object References (IDOR).</p>
+
+<form action="/AS11" method="post" class="mt-4">
+    <div class="form-group">
+        <label for="username">Enter User ID:</label>
+        <input type="text" class="form-control" id="username" name="username" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Get User Data</button>
+</form>
+
+<a href="/">Back to Home</a>
+{% endblock %}

@@ -106,8 +106,12 @@ def AS05():
 
 
 # AS06: Security Misconfiguration
-@app.route('/AS06')
+@app.route('/AS06', methods=['GET', 'POST'])
 def AS06():
+    if request.method == 'POST':
+        # Simulate a configuration change that should not be accessible
+        if 'config_change' in request.form:
+            return "Configuration changed (insecurely)."
     return render_template('AS06.html')
 
 # AS07: Cross-Site Scripting (XSS)
@@ -163,3 +167,41 @@ def upload_file():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return redirect(url_for('AS05'))
     return render_template('upload.html')
+
+@app.route('/AS11', methods=['GET', 'POST'])
+def AS11():
+    if request.method == 'POST':
+        if not authenticate(request.form['username'], request.form['password']):
+            return "Unauthorized"
+        user_id = request.form['user_id']
+        query = f"SELECT * FROM users WHERE id = {user_id}"
+        return f"Query: {query}"
+    return render_template('AS11.html')
+
+# AS13: Command Injection
+@app.route('/AS13', methods=['GET', 'POST'])
+def AS13():
+    if request.method == 'POST':
+        command = request.form['command']
+        output = os.popen(command).read()  # This is vulnerable to command injection
+        return f"Command output: <pre>{output}</pre>"
+    return render_template('AS13.html')
+
+
+#idor
+@app.route('/AS12', methods=['GET', 'POST'])
+def AS12():
+    if request.method == 'POST':
+        username = request.form['username']
+        users = read_users()
+        user_id = None
+        for uid, user_data in users.items():
+            if user_data['username'] == username:
+                user_id = uid
+                break
+
+        if user_id:
+            return f"User data for username {username}: User ID: {username}, Email: {users[user_id]['email']}"
+        else:
+            return "User not found"
+    return render_template('as12.html')
