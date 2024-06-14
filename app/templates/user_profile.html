@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}
+User Profile
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>User Profile</h1>
+    <div class="user-info">
+        <p><strong>Username:</strong> {{ user.name }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>User ID:</strong> {{ user.id }}</p>
+    </div>
+    <a href="/">Back to Home</a>
+</div>
+{% endblock %}
