@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, url_for
-from hashlib import sha256
 from werkzeug.utils import secure_filename
 import os
 from .user_auth import authenticate, write_user
@@ -19,7 +18,7 @@ def create_user():
     password = request.form['password']
     if not authenticate(username, password):
         write_user(username, password)
-        return "User created successfully"
+        return "User created successfully" #Parola düz metin olarak saklanıyor. Broken Authentication kategorisinde değerlendirilebilir -Nilay
     else:
         return "User already exists"
 
@@ -30,16 +29,16 @@ def read_users():
     users = {}
     with open(users_file, 'r') as file:
         for line in file:
-            username, password_hash = line.strip().split(',')
-            users[username] = password_hash
+            username, password = line.strip().split(',')
+            users[username] = password # Parola düz metin olarak okunuyor -Nilay
     return users
 
 def authenticate(username, password):
     users = read_users()
     if username in users:
-        stored_password_hash = users[username]
-        provided_password_hash = sha256(password.encode()).hexdigest()
-        if provided_password_hash == stored_password_hash:
+        stored_password = users[username]
+        provided_password = password
+        if provided_password == stored_password:
             return True
     return False
 
@@ -142,7 +141,7 @@ def AS10():
 
 @app.route('/login', methods=['POST'])
 def login():
-    if authenticate(request.form['username'], request.form['password']):
+    if authenticate(request.form['username'], request.form['password']): #Oturum sabitleme (session fixation) yapılmıyor. Oturum yönetimi yok. -Nilay
         return redirect(url_for('index'))  # Redirect to the homepage after successful login
     return "Login failed"
 
