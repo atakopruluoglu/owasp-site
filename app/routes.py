@@ -109,13 +109,44 @@ def AS05():
             return redirect(url_for('AS05'))
     return render_template('as05.html')
 
-# AS06: Security Misconfiguration
+# # Secret key for session management (required for flash messages)
+# app.secret_key = 'your_secret_key_here'
+
+# @app.route('/AS06', methods=['GET', 'POST'])
+# def AS06():
+#     if request.method == 'POST':
+#         if 'config_change' in request.form:
+#             # Implement proper authorization check (e.g., check if user is admin)
+#             if is_admin(request):
+#                 # Perform secure configuration change
+#                 perform_secure_config_change(request.form['config_change'])
+#                 flash('Configuration changed securely!')
+#             else:
+#                 flash('Unauthorized access!')
+#             return redirect(url_for('AS06'))
+#     return render_template('AS06.html')
+
+# def is_admin(request):
+#     # Replace with actual authentication logic (e.g., check user role)
+#     return request.form.get('username') == 'admin'  # Example: Check if user is admin
+
+# def perform_secure_config_change(config_change):
+#     # Implement secure configuration change logic here
+#     # Example: Write changes to a secure configuration file/database
+#     # Example: Log the configuration change event
+#     print(f"Secure configuration change: {config_change}")
+
+
 @app.route('/AS06', methods=['GET', 'POST'])
-def AS06():
+def A06():
     if request.method == 'POST':
-        if 'config_change' in request.form:
-            return "Configuration changed (insecurely)."
+        # Vulnerable action using outdated component
+        result = vulnerable_library.vulnerable_function(request.form['user_input'])
+        return f"Result: {result}"
     return render_template('AS06.html')
+
+
+
 
 # AS07: Cross-Site Scripting (XSS)
 @app.route('/AS07', methods=['GET', 'POST'])

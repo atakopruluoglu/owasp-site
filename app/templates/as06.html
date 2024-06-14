@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 {% block title %}AS06: Security Misconfiguration{% endblock %}
 {% block content %}
-<h1>AS06: Security Misconfiguration</h1>
-<p>This page demonstrates a security misconfiguration by allowing configuration changes via the web interface.</p>
-<form method="post">
-    <label for="config_change">Configuration Change:</label>
-    <input type="text" id="config_change" name="config_change">
-    <input type="submit" value="Apply">
-</form>
-<a href="/">Back to Home</a>
+<div class="container">
+    <h1>AS06: Security Misconfiguration</h1>
+    <p>This page demonstrates a security misconfiguration by allowing configuration changes via the web interface.</p>
+    
+    <form method="post">
+        <label for="config_change">Configuration Change:</label>
+        <input type="text" id="config_change" name="config_change" class="form-control">
+        <input type="submit" value="Apply" class="btn btn-primary">
+    </form>
+    
+    <a href="/" class="btn btn-secondary mt-3">Back to Home</a>
+</div>
 {% endblock %}
