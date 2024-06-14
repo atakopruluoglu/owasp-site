@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
+import logging
+from logging.handlers import RotatingFileHandler
 import os
 from .user_auth import authenticate, write_user
 from .insecure_deserialization import InsecureDeserialization
@@ -17,6 +19,21 @@ users_data = {
         'email': 'bob@example.com'
     }
 }
+
+# Configure logging ELİF
+log_formatter = logging.Formatter('%(asctime)s %(levelname)s %(funcName)s(%(lineno)d) %(message)s')
+log_file = os.path.join('app', 'app.log')
+
+file_handler = RotatingFileHandler(log_file, maxBytes=10240, backupCount=10)
+file_handler.setFormatter(log_formatter)
+file_handler.setLevel(logging.INFO)
+
+app.logger.addHandler(file_handler)
+
+@app.route('/log_message/<message>')
+def log_message(message):
+    logging.info(f"Received message: {message}")
+    return f"Logged message: {message}"
 
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
@@ -344,3 +361,10 @@ def giris():
         else:
             flash('Invalid credentials')
     return render_template('giris.html')
+
+
+@app.route('/logs')
+def logs():
+    with open('app.log', 'r') as log_file:
+        logs = log_file.readlines()
+    return render_template('logs.html', logs=logs)
