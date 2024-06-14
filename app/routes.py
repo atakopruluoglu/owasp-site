@@ -4,7 +4,18 @@ import os
 from .user_auth import authenticate, write_user
 
 from app import app
-
+users_data = {
+    'admin': {
+        'id': '1',
+        'name': 'Admin',
+        'email': 'admin@example.com'
+    },
+    'bob': {
+        'id': '2',
+        'name': 'Bob',
+        'email': 'bob@example.com'
+    }
+}
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
@@ -236,3 +247,30 @@ def AS12():
         else:
             return "User not found"
     return render_template('as12.html')
+#IDOR
+@app.route('/user_profile/<username>')
+def user_profile(username):
+    if username in users_data:
+        user_info = users_data[username]
+        return render_template('user_profile.html', user=user_info)
+    else:
+        return "User not found", 404
+# A08
+@app.route('/update_profile/<username>', methods=['POST'])
+def update_profile(username):
+    if username in users_data:
+        # Kullanıcı sadece kendi profilini güncelleyebilir gibi varsayıyoruz.
+        users_data[username]['name'] = request.form.get('name')
+        users_data[username]['email'] = request.form.get('email')
+        return redirect(url_for('user_profile', username=username))
+    else:
+        return "User not found", 404
+    
+    @app.route('/user_profile/<username>')
+    def user_profile(username):
+        if user_id in users_data:
+            user_info = users_data[username]
+            return render_template('user_profile.html', user=user_info)
+        else:
+            return "User not found", 404
+
