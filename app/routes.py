@@ -274,3 +274,58 @@ def update_profile(username):
         else:
             return "User not found", 404
 
+#A02:2021 – Cryptographic Failures - DB Baslangic
+#def get_db_connection():
+#    conn = sqlite3.connect('database.db')
+#    conn.row_factory = sqlite3.Row
+#    return conn
+#A02:2021 – Cryptographic Failures - DB Bitis
+
+#A02:2021 – Cryptographic Failures - Register Baslangic
+#@app.route('/register', methods=['GET', 'POST'])
+#def register():
+#    if request.method == 'POST':
+#        username = request.form['username']
+#        password = request.form['password']
+#        
+#        # Salt ve Hash ile Parola Saklama
+#        salt = os.urandom(16).hex()  # Rastgele bir salt oluştur
+#        salted_password = password + salt
+#        hashed_password_with_salt = generate_password_hash(salted_password, method='sha256')
+#        
+#        # Veritabanına kaydetme
+#        conn = get_db_connection()
+#        conn.execute('INSERT INTO users (username, password, salt) VALUES (?, ?, ?)', 
+#                     (username, hashed_password_with_salt, salt))
+#        conn.commit()
+#        conn.close()
+#
+#        flash('Registration successful!')
+#        return redirect(url_for('giris'))
+#    return render_template('register.html')
+#A02:2021 – Cryptographic Failures - Register Bitis
+
+#A02:2021 – Cryptographic Failures - Giris Baslangic
+#@app.route('/giris', methods=['GET', 'POST'])
+#def giris():
+#    if request.method == 'POST':
+#        username = request.form['username']
+#        password = request.form['password']
+#
+#        conn = get_db_connection()
+#        user = conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+#        conn.close()
+#
+#        if user:
+#            # Salted hash ile parola doğrulama
+#            salted_password = password + user['salt']
+#            if check_password_hash(user['password'], salted_password):
+#                flash('Login successful!')
+#                return redirect(url_for('index'))
+#            else:
+#                flash('Invalid credentials')
+#        else:
+#            flash('Invalid credentials')
+#    return render_template('giris.html')
+#A02:2021 – Cryptographic Failures - Giris Bitis
+
