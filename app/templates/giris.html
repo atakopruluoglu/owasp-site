@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}A02:2021 – Cryptographic Failures - Login{% endblock %}
+
+{% block content %}
+<body>
+    <h1>A02:2021 – Cryptographic Failures</h1>
+    <h2>Login</h2>
+    <form method="POST">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+        <button type="submit">Login</button>
+    </form>
+    <a href="/register">Register</a>
+</body>
+{% endblock %}
