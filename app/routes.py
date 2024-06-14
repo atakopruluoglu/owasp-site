@@ -173,13 +173,23 @@ def AS08():
     return render_template('AS08.html')
 
 # AS09: Using Components with Known Vulnerabilities
-@app.route('/AS09')
+@app.route('/AS09', methods=['GET', 'POST'])
 def AS09():
+    if request.method == 'POST':
+        # Example of using a vulnerable component
+        file = request.files['file']
+        file.save(os.path.join('/tmp', file.filename))
+        return "File uploaded"
     return render_template('AS09.html')
 
 # AS10: Insufficient Logging & Monitoring
 @app.route('/AS10')
 def AS10():
+    # Example of insufficient logging
+    if request.args.get('username') == 'admin':
+        # Logging sensitive data improperly
+        print(f"Admin accessed with IP: {request.remote_addr}")
+        return "Welcome, admin!"
     return render_template('AS10.html')
 
 @app.route('/login', methods=['POST'])
