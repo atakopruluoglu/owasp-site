@@ -5,6 +5,21 @@ from .user_auth import authenticate, write_user
 
 from app import app
 
+UPLOAD_FOLDER = 'uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# lab Insecure Deserialization
+try:
+    from .insecure_deserialization import *
+except Exception as e:
+    print("Error at importing modules for Insecure Deserialization lab. Check for missing libraries..")
+    print("Probably, you just need to pip install <exception thrown lib name>")
+
+#for captcha session
+captcha= InsecureDeserialization.CreateCaptcha(app)
+
 @app.route('/create_user', methods=['POST'])
 def create_user():
     username = request.form['username']
