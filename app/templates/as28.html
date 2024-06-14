@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}AS28: OS Command Injection{% endblock %}
+{% block content %}
+<h1>AS28: OS Command Injection</h1>
+<p>This page demonstrates an OS Command Injection vulnerability.</p>
+<form method="post">
+    <label for="command">Enter a command:</label>
+    <input type="text" id="command" name="command">
+    <button type="submit">Submit</button>
+</form>
+<a href="/">Back to Home</a>
+{% endblock %}

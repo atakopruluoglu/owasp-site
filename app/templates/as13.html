@@ -1,12 +1,22 @@
 {% extends "base.html" %}
-{% block title %}AS13: Command Injection{% endblock %}
+
+{% block title %}AS13: Command Execution and File Download{% endblock %}
+
 {% block content %}
-<h1>AS13: Command Injection</h1>
-<p>This page demonstrates command injection vulnerability.</p>
+<h1>AS13: Command Execution and File Download</h1>
+<p>This page demonstrates command execution and file download capabilities.</p>
+
 <form method="post">
     <label for="command">Enter command:</label>
     <input type="text" id="command" name="command">
     <input type="submit" value="Execute">
 </form>
+
+<p><strong>Examples:</strong></p>
+<ul>
+    <li>To download a file: <code>download filename.txt</code></li>
+    <!-- Add more examples or instructions as needed -->
+</ul>
+
 <a href="/">Back to Home</a>
 {% endblock %}

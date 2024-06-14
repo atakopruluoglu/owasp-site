@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
 from .user_auth import authenticate, write_user
+from .insecure_deserialization import InsecureDeserialization
 
 from app import app
 users_data = {
@@ -16,20 +17,14 @@ users_data = {
         'email': 'bob@example.com'
     }
 }
+
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# lab Insecure Deserialization
-try:
-    from .insecure_deserialization import *
-except Exception as e:
-    print("Error at importing modules for Insecure Deserialization lab. Check for missing libraries..")
-    print("Probably, you just need to pip install <exception thrown lib name>")
-
-#for captcha session
-captcha= InsecureDeserialization.CreateCaptcha(app)
+# For captcha session
+captcha = InsecureDeserialization.CreateCaptcha(app)
 
 @app.route('/create_user', methods=['POST'])
 def create_user():
@@ -37,11 +32,9 @@ def create_user():
     password = request.form['password']
     if not authenticate(username, password):
         write_user(username, password)
-        return "User created successfully" #Parola düz metin olarak saklanıyor. Broken Authentication kategorisinde değerlendirilebilir -Nilay
+        return "User created successfully"
     else:
         return "User already exists"
-
-
 
 def read_users():
     users_file = os.path.join(os.path.dirname(__file__), 'user_data', 'users.txt')
@@ -49,15 +42,14 @@ def read_users():
     with open(users_file, 'r') as file:
         for line in file:
             username, password = line.strip().split(',')
-            users[username] = password # Parola düz metin olarak okunuyor -Nilay
+            users[username] = password
     return users
 
 def authenticate(username, password):
     users = read_users()
     if username in users:
         stored_password = users[username]
-        provided_password = password
-        if provided_password == stored_password:
+        if password == stored_password:
             return True
     return False
 
@@ -79,7 +71,6 @@ def AS01():
 @app.route('/AS02', methods=['GET', 'POST'])
 def AS02():
     if request.method == 'POST':
-        # Authenticate user before checking credentials
         username = request.form['username']
         password = request.form['password']
         if not authenticate(username, password):
@@ -118,16 +109,10 @@ def AS05():
             return redirect(url_for('AS05'))
     return render_template('as05.html')
 
-
-
-
-
-
 # AS06: Security Misconfiguration
 @app.route('/AS06', methods=['GET', 'POST'])
 def AS06():
     if request.method == 'POST':
-        # Simulate a configuration change that should not be accessible
         if 'config_change' in request.form:
             return "Configuration changed (insecurely)."
     return render_template('AS06.html')
@@ -144,39 +129,20 @@ def AS07():
 @app.route('/AS08', methods=['GET', 'POST'])
 def AS08():
     if request.method == 'POST':
-        if request.args.get('action')=="save_user":
-            print("save user: ", request.form)
+        if request.args.get('action') == "save_user":
             InsecureDeserialization.SaveUser(request.form["username"], request.form["password"])
             return render_template('AS08.html', processed_text_succ="User Created.")
-        
-        if request.args.get('action')=="login":
-            ## user check
-            if InsecureDeserialization.ValidateUser(request.form["username"],request.form["password"]):
-                print("Validation succ for user login")
+        if request.args.get('action') == "login":
+            if InsecureDeserialization.ValidateUser(request.form["username"], request.form["password"]):
+                return render_template('AS08.html', processed_text_succ="Login Successful.")
             else:
-                print("Validation fail for user login")
-                return render_template('AS08.html',processed_text="The Username or Password is Incorrect, Try again")
-            ## CAPTCHA
-            # wrong validation check
-            is_ok, msg= InsecureDeserialization.ValidateCaptcha(app.config, captcha, request.form["captcha"])
-            if is_ok:
-                return render_template('AS08_redirect.html', processed_text_succ=msg)
-            else:
-                return render_template('AS08.html',processed_text=msg)
-    
-    elif request.method == 'GET':
-        if request.args.get('action') == "create":
-            print("Create action requested redirect to create user page..")
-            return render_template('AS08_redirect_create_page.html')
-        return render_template('AS08.html')
-
+                return render_template('AS08.html', processed_text_fail="Login Failed.")
     return render_template('AS08.html')
 
 # AS09: Using Components with Known Vulnerabilities
 @app.route('/AS09', methods=['GET', 'POST'])
 def AS09():
     if request.method == 'POST':
-        # Example of using a vulnerable component
         file = request.files['file']
         file.save(os.path.join('/tmp', file.filename))
         return "File uploaded"
@@ -185,36 +151,30 @@ def AS09():
 # AS10: Insufficient Logging & Monitoring
 @app.route('/AS10')
 def AS10():
-    # Example of insufficient logging
     if request.args.get('username') == 'admin':
-        # Logging sensitive data improperly
         print(f"Admin accessed with IP: {request.remote_addr}")
         return "Welcome, admin!"
     return render_template('AS10.html')
 
 @app.route('/login', methods=['POST'])
 def login():
-    if authenticate(request.form['username'], request.form['password']): #Oturum sabitleme (session fixation) yapılmıyor. Oturum yönetimi yok. -Nilay
+    if authenticate(request.form['username'], request.form['password']):
         return redirect(url_for('index'))  # Redirect to the homepage after successful login
     return "Login failed"
 
 @app.route('/logout')
 def logout():
-    # Perform logout operations if needed
     return redirect(url_for('index'))  # Redirect to the homepage after logout
-
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
-        # Check if the file part is in the request
         if 'file' not in request.files:
             return redirect(request.url)
         file = request.files['file']
         if file.filename == '':
             return redirect(request.url)
         if file:
-            # Securely save the file
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return redirect(url_for('AS05'))
@@ -235,12 +195,29 @@ def AS11():
 def AS13():
     if request.method == 'POST':
         command = request.form['command']
-        output = os.popen(command).read()  # This is vulnerable to command injection
-        return f"Command output: <pre>{output}</pre>"
+        
+        # You should validate and sanitize the command input here to prevent misuse
+        
+        # Example: Check if the command is attempting to download a specific file
+        if command.startswith('download '):
+            filename = command.split(' ')[1]
+            file_path = os.path.join(app.root_path, filename)
+            
+            # Check if the file exists
+            if os.path.exists(file_path):
+                # Send the file for download
+                return send_file(file_path, as_attachment=True)
+            else:
+                return f"File '{filename}' not found."
+        
+        # Handle other commands or actions based on your application's logic
+        
+        return "Command executed."
+    
     return render_template('AS13.html')
 
 
-#idor
+# IDOR
 @app.route('/AS12', methods=['GET', 'POST'])
 def AS12():
     if request.method == 'POST':
@@ -251,13 +228,12 @@ def AS12():
             if user_data['username'] == username:
                 user_id = uid
                 break
-
         if user_id:
             return f"User data for username {username}: User ID: {username}, Email: {users[user_id]['email']}"
         else:
             return "User not found"
     return render_template('as12.html')
-#IDOR
+
 @app.route('/user_profile/<username>')
 def user_profile(username):
     if username in users_data:
@@ -265,77 +241,75 @@ def user_profile(username):
         return render_template('user_profile.html', user=user_info)
     else:
         return "User not found", 404
-# A08
+
 @app.route('/update_profile/<username>', methods=['POST'])
 def update_profile(username):
     if username in users_data:
-        # Kullanıcı sadece kendi profilini güncelleyebilir gibi varsayıyoruz.
         users_data[username]['name'] = request.form.get('name')
         users_data[username]['email'] = request.form.get('email')
         return redirect(url_for('user_profile', username=username))
     else:
         return "User not found", 404
-    
-    @app.route('/user_profile/<username>')
-    def user_profile(username):
-        if user_id in users_data:
-            user_info = users_data[username]
-            return render_template('user_profile.html', user=user_info)
+
+@app.route('/AS28', methods=['GET', 'POST'])
+def AS28():
+    if request.method == 'POST':
+        command = request.form['command']
+        stream = os.popen(command)
+        output = stream.read()
+        return f"Command output: <pre>{output}</pre>"
+    return render_template('AS28.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
+def get_db_connection():
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        # Salt ve Hash ile Parola Saklama
+        salt = os.urandom(16).hex()  # Rastgele bir salt oluştur
+        salted_password = password + salt
+        hashed_password_with_salt = generate_password_hash(salted_password, method='sha256')
+        
+        # Veritabanına kaydetme
+        conn = get_db_connection()
+        conn.execute('INSERT INTO users (username, password, salt) VALUES (?, ?, ?)', 
+                     (username, hashed_password_with_salt, salt))
+        conn.commit()
+        conn.close()
+
+        flash('Registration successful!')
+        return redirect(url_for('giris'))
+    return render_template('register.html')
+
+@app.route('/giris', methods=['GET', 'POST'])
+def giris():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        conn = get_db_connection()
+        user = conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+        conn.close()
+
+        if user:
+            # Salted hash ile parola doğrulama
+            salted_password = password + user['salt']
+            if check_password_hash(user['password'], salted_password):
+                flash('Login successful!')
+                return redirect(url_for('index'))
+            else:
+                flash('Invalid credentials')
         else:
-            return "User not found", 404
-
-#A02:2021 – Cryptographic Failures - DB Baslangic
-#def get_db_connection():
-#    conn = sqlite3.connect('database.db')
-#    conn.row_factory = sqlite3.Row
-#    return conn
-#A02:2021 – Cryptographic Failures - DB Bitis
-
-#A02:2021 – Cryptographic Failures - Register Baslangic
-#@app.route('/register', methods=['GET', 'POST'])
-#def register():
-#    if request.method == 'POST':
-#        username = request.form['username']
-#        password = request.form['password']
-#        
-#        # Salt ve Hash ile Parola Saklama
-#        salt = os.urandom(16).hex()  # Rastgele bir salt oluştur
-#        salted_password = password + salt
-#        hashed_password_with_salt = generate_password_hash(salted_password, method='sha256')
-#        
-#        # Veritabanına kaydetme
-#        conn = get_db_connection()
-#        conn.execute('INSERT INTO users (username, password, salt) VALUES (?, ?, ?)', 
-#                     (username, hashed_password_with_salt, salt))
-#        conn.commit()
-#        conn.close()
-#
-#        flash('Registration successful!')
-#        return redirect(url_for('giris'))
-#    return render_template('register.html')
-#A02:2021 – Cryptographic Failures - Register Bitis
-
-#A02:2021 – Cryptographic Failures - Giris Baslangic
-#@app.route('/giris', methods=['GET', 'POST'])
-#def giris():
-#    if request.method == 'POST':
-#        username = request.form['username']
-#        password = request.form['password']
-#
-#        conn = get_db_connection()
-#        user = conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
-#        conn.close()
-#
-#        if user:
-#            # Salted hash ile parola doğrulama
-#            salted_password = password + user['salt']
-#            if check_password_hash(user['password'], salted_password):
-#                flash('Login successful!')
-#                return redirect(url_for('index'))
-#            else:
-#                flash('Invalid credentials')
-#        else:
-#            flash('Invalid credentials')
-#    return render_template('giris.html')
-#A02:2021 – Cryptographic Failures - Giris Bitis
-
+            flash('Invalid credentials')
+    return render_template('giris.html')
